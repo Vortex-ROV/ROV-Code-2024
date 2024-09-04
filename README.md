@@ -1,6 +1,6 @@
 # Vortex ROV Code Repository
 
-Welcome to the repository for the Vortex ROV! This README will guide you through the prerequisites and file structure of the ROV software.
+Welcome to the repository for the Vortex ROV software! This README will guide you through the prerequisites and file structure of the ROV's software.
 
 ## Table of Contents
 
