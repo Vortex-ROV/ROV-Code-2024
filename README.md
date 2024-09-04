@@ -37,4 +37,4 @@ To set up the ROV software on your development environment, follow these steps:
 - **`/src`:** Core source code for navigation, control, and sensor data processing.
 - **`/tests`:** Test cases to validate the software's functionality and performance.
 - **`main.py`:** Main script used to launch the ROV software.
-- **`requirements.txt`:** List of Python dependencies required for the ROV software.
+- **`ROV.toml`:** Configuration file for packaging ROV code.
