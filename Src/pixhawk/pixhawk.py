@@ -3,7 +3,7 @@ import sys
 import time
 import serial.tools.list_ports
 
-from packages.pixhawk.sensors import SensorsCollector
+from Src.pixhawk.sensors import SensorsCollector
 
 class Pixhawk:
     

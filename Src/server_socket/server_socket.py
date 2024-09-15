@@ -42,3 +42,6 @@ class ServerSocket:
             pass
     # def closedSocket(self): #try it 29/4/2024 if not working remove it / to handle if socket disconnected stop rov until its connected again 
     #     return self.closed
+
+if  __name__ == '__main__' :
+    ServerSocket(4096)

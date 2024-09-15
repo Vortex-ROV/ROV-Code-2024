@@ -4,7 +4,7 @@ import time
 import threading
 from Src.oak_d.baremin import run_camera
 
-Sobek = ServerSocket(12345)
+Sobek = ServerSocket(4096)
 Sobek.accept()
 
 while True:
