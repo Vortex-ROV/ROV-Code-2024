@@ -1,8 +1,8 @@
-from Src.server_socket.server_socket import ServerSocket
-from Src.pixhawk.pixhawk import Pixhawk
+from src.server_socket.server_socket import ServerSocket
+from src.pixhawk.pixhawk import Pixhawk
 import time
 import threading
-from Src.oak_d.baremin import run_camera
+from src.oak_d.baremin import run_camera
 
 Sobek = ServerSocket(4096)
 Sobek.accept()
