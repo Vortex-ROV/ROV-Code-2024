@@ -19,7 +19,7 @@ class ServerSocket:
 
     def receive(self, buffer_size: int):
         try:
-            received = self.__client_socket.recv(buffer_size).decode()
+            received = self.__client_socket.recv(buffer_size)
             if received is not None and len(received) != 0:
                 return received
             raise socket.error

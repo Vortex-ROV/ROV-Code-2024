@@ -3,15 +3,19 @@ import sys
 import time
 import serial.tools.list_ports
 
-from Src.pixhawk.sensors import SensorsCollector
+from src.server_socket.message import Message
+
+from src.pixhawk.sensors import SensorsCollector
 
 class Pixhawk:
     
     def __init__(self, port="/dev/ttyACM0", baudrate=115200):
         self.port = self.find_pixhawk_port()
+        print(self.port)
         self.master = mavutil.mavlink_connection(self.port, baudrate)
         print("pix connected ")
         self.master.wait_heartbeat()
+        print("heart beat")
         self.sensors_collector = SensorsCollector(self.master)
 
         self.Set_MAX_MOTOR_PWM(1800)
@@ -43,11 +47,12 @@ class Pixhawk:
         return self.sensors_collector.read_sensors()
             
         
-    def set_gribber_light_pwm(self, msg):
-        dic = {'0' : 0,
+    def set_gribber_light_pwm(self, *msg):
+        dic = {0 : 0,
+        '0': 0,
            'L': '01',
            'R': '10',
-           '1':5000,
+           1:5000,
            'O':'00',
            'H':1800}
         self.master.set_servo(11,dic[msg[0]])
@@ -126,23 +131,28 @@ class Pixhawk:
         print("Flight mode:", mode)
         time.sleep(0.01)
         
-    def ControlPixhawk(self, message ):
-        self.set_direction_channel_pwm(int(message[0:4]), int(message[4:8]), int(message[8:12]), int(message[12:16]))
-        self.set_gribber_light_pwm(message[16:20])
+    def ControlPixhawk(self, message):
 
-        if int(message[20]) == 1:
-            self.Set_MAX_MOTOR_PWM(1750)
-            self.Set_MIN_MOTOR_PWM(1250)
-        else:
-            self.Set_MAX_MOTOR_PWM(1800)
-            self.Set_MIN_MOTOR_PWM(1200)
+        message = Message(message)
+
+        print(message)
         
-        if int(message[21]) == 1:
+        self.set_direction_channel_pwm(message.get_value("throttle"), message.get_value("yaw"), message.get_value("forward"), message.get_value("lateral"))
+        self.set_gribber_light_pwm(message.get_value("gripper_1"), message.get_value("gripper_2"), message.get_value("light"), message.get_value("rotating_gripper"))
+
+        # if int(message[20]) == 1:
+        #     self.Set_MAX_MOTOR_PWM(1750)
+        #     self.Set_MIN_MOTOR_PWM(1250)
+        # else:
+        #     self.Set_MAX_MOTOR_PWM(1800)
+        #     self.Set_MIN_MOTOR_PWM(1200)
+        
+        if message.get_value("armed"):
             self.arm()
-        elif int(message[21]) == 0:
+        else:
             self.disarm()
         
-        self.Set_Flight_Mode(message[22])
+        self.Set_Flight_Mode(message.get_value("flight_mode"))
 
 
 
