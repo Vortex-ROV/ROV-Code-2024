@@ -1,8 +1,8 @@
-from src.server_socket.server_socket import ServerSocket
-from src.pixhawk.pixhawk import Pixhawk
 import time
 import threading
-from src.oak_d.baremin import run_camera
+from src.server_socket import ServerSocket
+from src.pixhawk import Pixhawk
+from src.oakD import oakServer
 
 Sobek = ServerSocket(4096)
 Sobek.accept()
@@ -16,7 +16,7 @@ while True:
         print("No pixhawk connected")
 
 Heeartbeat_thread = threading.Thread(target=pix.heartbeat)
-oak_thread = threading.Thread(target=run_camera)
+oak_thread = threading.Thread(target=oakServer.main())
 Heeartbeat_thread.start()
 oak_thread.start()
 

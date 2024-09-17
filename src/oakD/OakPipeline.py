@@ -20,9 +20,7 @@ class OakPipeline:
         xoutRgb: color camer output
     """
 
-    def __init__(
-        self, FPS=40
-    ) -> None:
+    def __init__(self, FPS=40) -> None:
         self.fps = FPS
         # create oak-d pipeline
         self.pipeline = dai.Pipeline()
@@ -36,8 +34,8 @@ class OakPipeline:
         # Properties
         self.camRgb.setBoardSocket(dai.CameraBoardSocket.CAM_A)
         self.camRgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_4_K)
-        self.camRgb.setIspScale(2, 3)
         self.camrgb.setPreviewSize(1920, 1080)
+        self.camRgb.setIspScale(1,2)
         self.camRgb.setFps(self.fps)
 
         # Linking
