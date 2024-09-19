@@ -34,7 +34,7 @@ class OakPipeline:
         # Properties
         self.camRgb.setBoardSocket(dai.CameraBoardSocket.CAM_A)
         self.camRgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_4_K)
-        self.camrgb.setPreviewSize(1920, 1080)
+        self.camRgb.setPreviewSize(1920, 1080)
         self.camRgb.setIspScale(1,2)
         self.camRgb.setFps(self.fps)
 

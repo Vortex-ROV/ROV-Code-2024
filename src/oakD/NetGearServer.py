@@ -3,7 +3,7 @@ import sys
 from vidgear.gears import NetGear
 
 
-class NetgearServer:
+class NetgearServer(NetGear):
     """Creates a tcp Netgear server
 
     Args:
@@ -18,13 +18,21 @@ class NetgearServer:
             "jpeg_compression_quality": 70,
             "jpeg_compression_fastdct": True,
             "jpeg_compression_fastupsample": True,
+            "max_retries":sys.maxsize
         }
         # Define Netgear Server with default parameters
-        self.server = NetGear(
-            address=ADDRESS,
+        # self.server = NetGear(
+        #     address=ADDRESS,
+        #     port=PORT,
+        #     protocol="tcp",
+        #     pattern=1,
+        #     logging=True,
+        #     **options
+        # )
+        super().__init__(address=ADDRESS,
             port=PORT,
             protocol="tcp",
             pattern=1,
             logging=True,
-            **options
-        )
+
+            **options)
