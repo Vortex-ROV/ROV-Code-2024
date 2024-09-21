@@ -20,19 +20,17 @@ class NetgearServer(NetGear):
             "jpeg_compression_fastupsample": True,
             "max_retries":sys.maxsize
         }
+        # options = {
+        #     "bidirectional_mode":True,
+        #     "compression_format": ".png",  # Using PNG format for compression
+        #     "compression_param": 3,        # Compression level (0 to 9)
+        # }
         # Define Netgear Server with default parameters
-        # self.server = NetGear(
-        #     address=ADDRESS,
-        #     port=PORT,
-        #     protocol="tcp",
-        #     pattern=1,
-        #     logging=True,
-        #     **options
-        # )
-        super().__init__(address=ADDRESS,
+        self.server = NetGear(
+            address=ADDRESS,
             port=PORT,
             protocol="tcp",
             pattern=1,
             logging=True,
-
-            **options)
+            **options
+        )
