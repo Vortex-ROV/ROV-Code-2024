@@ -15,10 +15,12 @@ class NetgearServer(NetGear):
         # define various tweak flags
         options = {
             "jpeg_compression": True,
-            "jpeg_compression_quality": 90,
+            "jpeg_compression_quality": 50,
             "jpeg_compression_fastdct": True,
             "jpeg_compression_fastupsample": True,
-            "max_retries":sys.maxsize
+            # "compression_format": ".png",  # Using PNG format for compression
+            # "compression_param": 3,        # Compression level (0 to 9)
+            # "max_retries":sys.maxsize
         }
         # Define Netgear Server with default parameters
         # self.server = NetGear(

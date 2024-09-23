@@ -4,10 +4,10 @@ import numpy as np
 from NetGearServer import NetgearServer
 from OakPipeline import OakPipeline
 import threading
-
+import time
 class oakServer():
     
-    def __init__(self, fps=60):
+    def __init__(self, fps=40):
         self.pipeline = OakPipeline(FPS=fps).get_pipeline()  # Set up the Oak-D pipeline
         self.device = None
         self.video_queue = None
@@ -19,7 +19,7 @@ class oakServer():
     def start(self):
         # Start the Oak-D device and stream
         self.device = dai.Device(self.pipeline)
-        self.video_queue = self.device.getOutputQueue(name="video", maxSize=1, blocking=False)
+        self.video_queue = self.device.getOutputQueue(name="video", maxSize=2, blocking=False)
         self.running = True
 
         # Start thread for capturing frames from Oak-D
@@ -30,7 +30,7 @@ class oakServer():
             video_in = self.video_queue.get()
             frame = video_in.getCvFrame()
             # frame = np.ones((1080,1920,3),dtype=np.uint8) * 255
-            print(frame.shape)
+            # print(frame.shape)
             # Store the latest frame with thread safety
             with self.frame_lock:
                 self.latest_frame = frame
@@ -48,17 +48,24 @@ class oakServer():
 
     def main():
         # Initialize and start the Netgear stream
-        netgear_stream = oakServer(fps=60)
+        netgear_stream = oakServer(fps=40)
         netgear_stream.start()
 
         try:
             while True:
                 # Get the latest frame captured by the thread
+                start_time_getf = time.time()
                 frame = netgear_stream.get_latest_frame()
-
+                end_time_getf = time.time()
+                print("get frame time = ",end_time_getf-start_time_getf)
                 if frame is not None:
                     # Send the latest frame through the server
-                    netgear_stream.server.server.send(frame)
+                    start_time_sendf = time.time()
+                    netgear_stream.server.send(frame)
+                    end_time_sendf = time.time()
+                    print("send frame time = ",end_time_sendf-start_time_sendf)
+                    # netgear_stream.server.send(frame)
+
                 
                 # Optionally, you can add a small delay or check for exit conditions
                 # time.sleep(0.01)
