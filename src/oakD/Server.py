@@ -1,8 +1,8 @@
 import cv2
 import depthai as dai
 import numpy as np
-from NetGearServer import NetgearServer
-from OakPipeline import OakPipeline
+from .NetGearServer import NetgearServer
+from .OakPipeline import OakPipeline
 import threading
 import time
 class oakServer():

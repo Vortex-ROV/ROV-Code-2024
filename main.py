@@ -17,7 +17,7 @@ while True:
         print("No pixhawk connected")
 
 Heeartbeat_thread = threading.Thread(target=pix.heartbeat)
-oak_thread = threading.Thread(target=oak.Main())
+oak_thread = threading.Thread(target=oak.main())
 Heeartbeat_thread.start()
 oak_thread.start()
 
