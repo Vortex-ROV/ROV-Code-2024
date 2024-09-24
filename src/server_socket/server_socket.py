@@ -2,7 +2,6 @@ import socket
 
 
 class ServerSocket:
-    # closed = 0  #try it 29/4/2024 if not working remove it 
     def __init__(self, port: int):
         self.__welcoming_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__welcoming_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -10,11 +9,9 @@ class ServerSocket:
         self.__welcoming_socket.listen()
 
     def accept(self):
-        # self.closed=1 #try it 29/4/2024 if not working remove it 
         print("waiting for client")
         self.__client_socket, _ = self.__welcoming_socket.accept()
         self.__client_socket.setblocking(False)
-        # self.closed=0  #try it 29/4/2024 if not working remove it 
         print("connected to client")
 
     def receive(self, buffer_size: int):

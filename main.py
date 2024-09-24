@@ -1,11 +1,11 @@
-from src.server_socket.server_socket import ServerSocket
-from src.pixhawk.pixhawk import Pixhawk
+from src.server_socket.message import Message
 import time
 import threading
-from src.oak_d.baremin import run_camera
+from src.server_socket import ServerSocket
+from src.pixhawk import Pixhawk
+from src.oakD import oakServer
 
-from src.server_socket.message import Message
-
+oak = oakServer()
 Sobek = ServerSocket(4096)
 Sobek.accept()
 
@@ -14,11 +14,12 @@ while True:
         pix = Pixhawk()
         print("done")
         break
-    except:
+    except Exception as e:
+        print(e)
         print("No pixhawk connected")
 
 Heeartbeat_thread = threading.Thread(target=pix.heartbeat)
-# oak_thread = threading.Thread(target=run_camera)
+oak_thread = threading.Thread(target=oak.main)
 Heeartbeat_thread.start()
 # oak_thread.start()
 
@@ -28,7 +29,7 @@ while True:
     
     msg = Sobek.receive(msg_len)
 
-    Sobek.send(pix.get_sensor().encode())
+    # Sobek.send(pix.get_sensor().encode())
 
     if msg is not None:
         pix.ControlPixhawk(msg)

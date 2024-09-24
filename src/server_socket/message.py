@@ -9,7 +9,7 @@ class Message:
 
     def __init__(self, msg=b"") -> None:
         # default message
-        self.__msg = {
+        self._msg = {
             "throttle": 1500,
             "yaw": 1500,
             "forward": 1500,
@@ -23,41 +23,45 @@ class Message:
             "joystick_connect": False,
         }
 
-        # recreate dictionary using provided bytes of message
-        if msg != b"":
-            index = 0
-            for key in self.__msg.keys():
-                if isinstance(self.__msg[key], int):
-                    self.__msg[key] = int.from_bytes(msg[index : index + 4], "big")
-                    index += 4
-                elif isinstance(self.__msg[key], float):
-                    self.__msg[key] = struct.unpack("d", msg[index : index + 8])[0]
-                    index += 8
-                elif isinstance(self.__msg[key], str):
-                    self.__msg[key] = "".join(
-                        map(chr, msg[index : index + len(self.__msg[key])])
-                    )
-                    index += len(self.__msg[key])
-                elif isinstance(self.__msg[key], bool):
-                    self.__msg[key] = bool.from_bytes(msg[index], "big")
-                    index += 1
-                else:
-                    raise Exception("Unrecognised data type")
+        self.recreate_msg(msg)
+
+    def recreate_msg(self, msg: bytes) -> None:
+        if msg == b"":
+            return
+
+        index = 0
+        for key in self._msg.keys():
+            if isinstance(self._msg[key], int):
+                self._msg[key] = int.from_bytes(msg[index : index + 4], "big")
+                index += 4
+            elif isinstance(self._msg[key], float):
+                self._msg[key] = struct.unpack("d", msg[index : index + 8])[0]
+                index += 8
+            elif isinstance(self._msg[key], str):
+                self._msg[key] = "".join(
+                    map(chr, msg[index : index + len(self._msg[key])])
+                )
+                index += len(self._msg[key])
+            elif isinstance(self._msg[key], bool):
+                self._msg[key] = bool.from_bytes(msg[index], "big")
+                index += 1
+            else:
+                raise Exception("Unrecognised data type")
 
     def bytes(self) -> bytes:
         """
         Get the bytes representation of the message to be sent through the socket
         """
         b = b""
-        for key in self.__msg.keys():
-            if isinstance(self.__msg[key], int):
-                b += self.__msg[key].to_bytes(4, "big")
-            elif isinstance(self.__msg[key], float):
-                b += struct.pack("d", self.__msg[key])
-            elif isinstance(self.__msg[key], str):
-                b += self.__msg[key].encode()
-            elif isinstance(self.__msg[key], bool):
-                b += self.__msg[key].to_bytes(1, "big")
+        for key in self._msg.keys():
+            if isinstance(self._msg[key], int):
+                b += self._msg[key].to_bytes(4, "big")
+            elif isinstance(self._msg[key], float):
+                b += struct.pack("d", self._msg[key])
+            elif isinstance(self._msg[key], str):
+                b += self._msg[key].encode()
+            elif isinstance(self._msg[key], bool):
+                b += self._msg[key].to_bytes(1, "big")
             else:
                 raise Exception("Unrecognised data type")
         return b
@@ -66,7 +70,7 @@ class Message:
         """
         Get the value of a key from the message dictionary
         """
-        return self.__msg[key]
+        return self._msg[key]
 
     def set_value(self, key, value) -> None:
         """
@@ -78,23 +82,23 @@ class Message:
             - Can only override string type message values with those of the same length
         """
         if (
-            key in self.__msg
-            and type(self.__msg[key]) == type(value)
+            key in self._msg
+            and type(self._msg[key]) == type(value)
             and (
                 type(value) == str
-                and len(value) == len(self.__msg[key])
+                and len(value) == len(self._msg[key])
                 or type(value) != str
             )
         ):
-            self.__msg[key] = value
+            self._msg[key] = value
         else:
             raise ValueError()
 
     def __eq__(self, value) -> bool:
-        return self.__msg == value.__msg
+        return self._msg == value.__msg
 
     def __str__(self) -> str:
-        return str(self.__msg)
+        return str(self._msg)
 
 
 class Test(unittest.TestCase):
