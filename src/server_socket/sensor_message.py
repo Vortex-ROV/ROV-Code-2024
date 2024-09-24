@@ -1,4 +1,4 @@
-from message import Message
+from . import Message
 
 class SensorMessage(Message):
     def __init__(self, msg=b"") -> None:

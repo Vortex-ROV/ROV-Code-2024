@@ -32,7 +32,7 @@ while True:
     # Sobek.send(pix.get_sensor().encode())
 
     if msg is not None:
-        pix.ControlPixhawk(msg)
+        pix.control_pixhawk(msg)
         print(msg)
 
     time.sleep(0.01)

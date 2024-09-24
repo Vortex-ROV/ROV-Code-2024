@@ -2,7 +2,7 @@
 from pymavlink import mavutil
 import time
 
-from server_socket import SensorMessage
+from src.server_socket import SensorMessage
 
 class SensorsCollector:
     """
@@ -48,7 +48,7 @@ class SensorsCollector:
 
         return imu_values
 
-    def get_scaled_pressure2(self) -> list[str]:
+    def get_scaled_pressure2(self):
         """
         Retrieves scaled pressure and temperature data from the Pixhawk.
         
