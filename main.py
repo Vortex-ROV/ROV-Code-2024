@@ -21,7 +21,7 @@ while True:
 Heeartbeat_thread = threading.Thread(target=pix.heartbeat)
 oak_thread = threading.Thread(target=oak.main)
 Heeartbeat_thread.start()
-# oak_thread.start()
+oak_thread.start()
 
 msg_len = len(Message().bytes())
 

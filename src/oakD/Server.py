@@ -1,10 +1,7 @@
-import cv2
 import depthai as dai
-import numpy as np
 from .NetGearServer import NetgearServer
 from .OakPipeline import OakPipeline
 import threading
-import time
 class oakServer():
     
     def __init__(self, fps=60):
@@ -45,7 +42,7 @@ class oakServer():
         #     self.device.close()
         self.server.close()
 
-    def main():
+    def main(self):
         # Initialize and start the Netgear stream
         
         netgear_stream = oakServer(fps=60)
@@ -55,7 +52,6 @@ class oakServer():
             while True:
                 # Get the latest frame captured by the thread
                 frame = netgear_stream.get_latest_frame()
-
                 if frame is not None:
                     # Send the latest frame through the server
                     # netgear_stream.server.send(frame)
