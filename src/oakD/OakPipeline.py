@@ -37,10 +37,13 @@ class OakPipeline:
         self.camRgb.setPreviewSize(1920, 1080)
         self.camRgb.setIspScale(1,2)
         self.camRgb.setFps(self.fps)
-
+        
         # Linking
         self.xoutRgb.setStreamName("video")
-        self.camRgb.preview.link(self.xoutRgb.input)
+        self.xoutRgb.input.setBlocking(False)
+        self.xoutRgb.input.setQueueSize(4)
+        self.camRgb.video.link(self.xoutRgb.input)
+
 
     
     def get_pipeline(self):

@@ -2,6 +2,7 @@ import depthai as dai
 from .NetGearServer import NetgearServer
 from .OakPipeline import OakPipeline
 import threading
+import cv2
 class oakServer():
     
     def __init__(self, fps=60):
@@ -16,7 +17,7 @@ class oakServer():
     def start(self):
         # Start the Oak-D device and stream
         self.device = dai.Device(self.pipeline)
-        self.video_queue = self.device.getOutputQueue(name="video", maxSize=1, blocking=False)
+        self.video_queue = self.device.getOutputQueue(name="video", maxSize=4, blocking=False)
         self.running = True
 
         # Start thread for capturing frames from Oak-D
@@ -45,7 +46,7 @@ class oakServer():
     def main(self):
         # Initialize and start the Netgear stream
         
-        netgear_stream = oakServer(fps=60)
+        netgear_stream = oakServer(fps=30)
         netgear_stream.start()
 
         try:
@@ -59,9 +60,11 @@ class oakServer():
 
                 # Optionally, you can add a small delay or check for exit conditions
                 # time.sleep(0.01)
-        except KeyboardInterrupt:
+        except :
             print("Exiting...")
             netgear_stream.stop()
+            cv2.destroyAllWindows()
+
 
     
 if __name__ == "__main__":
