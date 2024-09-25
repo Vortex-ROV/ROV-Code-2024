@@ -19,7 +19,7 @@ class oakServer():
     def start(self):
         # Start the Oak-D device and stream
         self.device = dai.Device(self.pipeline)
-        self.video_queue = self.device.getOutputQueue(name="video", maxSize=2, blocking=False)
+        self.video_queue = self.device.getOutputQueue(name="video", maxSize=4, blocking=False)
         self.running = True
 
         # Start thread for capturing frames from Oak-D
