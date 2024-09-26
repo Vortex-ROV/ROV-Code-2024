@@ -19,7 +19,11 @@ class oakServer():
     def start(self):
         # Start the Oak-D device and stream
         self.device = dai.Device(self.pipeline)
+<<<<<<< HEAD
         self.video_queue = self.device.getOutputQueue(name="video", maxSize=2, blocking=False)
+=======
+        self.video_queue = self.device.getOutputQueue(name="video", maxSize=4, blocking=False)
+>>>>>>> 10079d815899b2511d7e27e6465709a380e8eb8f
         self.running = True
 
         # Start thread for capturing frames from Oak-D
@@ -48,10 +52,15 @@ class oakServer():
 
     def main():
         # Initialize and start the Netgear stream
+<<<<<<< HEAD
         start_time_OakServer = time.time()
         netgear_stream = oakServer(fps=40)
         end_time_OakServer = time.time()
         print("Oak Server Init time = ",end_time_OakServer-start_time_OakServer)
+=======
+        netgear_stream = oakServer(fps=40)
+        netgear_stream.start()
+>>>>>>> 10079d815899b2511d7e27e6465709a380e8eb8f
 
         start_time_OakServerStream = time.time()
         netgear_stream.start()
