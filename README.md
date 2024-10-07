@@ -21,13 +21,27 @@ To set up the ROV software on your development environment, follow these steps:
    git clone https://github.com/Vortex-ROV/ROV-Code.git
    cd ROV-Code
    ```
+2. **Create and Activate a Virtual Environment:**
 
-2. **Install Packaged Dependencies:**
+   It's a good practice to use a virtual environment to manage dependencies. Run the following commands to create and activate one:
+
+   - On macOS/Linux:
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+
+   - On Windows:
+     ```bash
+     python -m venv venv
+     venv\Scripts\activate
+     
+3. **Install Packaged Dependencies:**
    ```bash
    pip install .
    ```
 
-3. **Run the ROV Software:**
+4. **Run the ROV Software:**
    ```bash
    python main.py
    ```
