@@ -19,7 +19,7 @@ class NetgearServer(NetGear):
             "jpeg_compression_fastdct": True,
             "jpeg_compression_fastupsample": True,
             "max_retries":sys.maxsize,
-            "bidirectional_mode": True  # Enable two-way communication
+            # "bidirectional_mode": True  # Enable two-way communication
         }
         # options = {
         #     "bidirectional_mode":True,

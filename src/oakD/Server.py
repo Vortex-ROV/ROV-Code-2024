@@ -1,6 +1,6 @@
 import depthai as dai
-from NetGearServer import NetgearServer
-from OakPipeline import OakPipeline
+from .NetGearServer import NetgearServer
+from .OakPipeline import OakPipeline
 import threading
 import cv2
 class oakServer():
@@ -56,7 +56,7 @@ class oakServer():
                 if frame is not None:
                     # Send the latest frame through the server
                     # netgear_stream.server.send(frame)
-                    netgear_stream.server.server.send((frame))
+                    netgear_stream.server.server.send(frame)
 
                 # Optionally, you can add a small delay or check for exit conditions
                 # time.sleep(0.01)
