@@ -32,6 +32,6 @@ class NetgearServer(NetGear):
             port=PORT,
             protocol="tcp",
             pattern=1,
-            logging=True,
+            logging=False,
             **options
         )
