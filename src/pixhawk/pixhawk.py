@@ -3,19 +3,27 @@ import sys
 import time
 import serial.tools.list_ports
 
+from src.server_socket.message import Message
 from src.pixhawk.sensors import SensorsCollector
 
 class Pixhawk:
     
     def __init__(self, port="/dev/ttyACM0", baudrate=115200):
         self.port = self.find_pixhawk_port()
+        print(self.port)
         self.master = mavutil.mavlink_connection(self.port, baudrate)
         print("pix connected ")
-        self.master.wait_heartbeat()
+        
+        try:
+            self.master.wait_heartbeat()
+        except Exception as e:
+            print(e)
+
+        print("heart beat")
         self.sensors_collector = SensorsCollector(self.master)
 
-        self.Set_MAX_MOTOR_PWM(1800)
-        self.Set_MIN_MOTOR_PWM(1200)
+        self.set_max_motor_pwm(1800)
+        self.set_min_motor_pwm(1200)
         
     def find_pixhawk_port(self):
         ports = serial.tools.list_ports.comports()
@@ -43,11 +51,12 @@ class Pixhawk:
         return self.sensors_collector.read_sensors()
             
         
-    def set_gribber_light_pwm(self, msg):
-        dic = {'0' : 0,
+    def set_gripper_light_pwm(self, *msg):
+        dic = {0 : 0,
+        '0': 0,
            'L': '01',
            'R': '10',
-           '1':5000,
+           1:5000,
            'O':'00',
            'H':1800}
         self.master.set_servo(11,dic[msg[0]])
@@ -76,7 +85,7 @@ class Pixhawk:
     def disarm(self):   
         self.master.arducopter_disarm()
     
-    def Set_Flight_Mode(self,mode_char):
+    def set_flight_mode(self,mode_char):
         # mapping character to mode name 
         mode = {
             'M': 'MANUAL',
@@ -99,7 +108,7 @@ class Pixhawk:
     mavutil.mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
     mode_id)
         
-    def Set_MAX_MOTOR_PWM(self,max=1800):
+    def set_max_motor_pwm(self,max=1800):
         #This sets the max PWM value in microseconds that will ever be output to the motors
         self.master.mav.param_set_send(
         self.master.target_system, self.master.target_component,
@@ -108,7 +117,7 @@ class Pixhawk:
         mavutil.mavlink.MAV_PARAM_TYPE_REAL32
     )
         
-    def Set_MIN_MOTOR_PWM(self,min = 1200):
+    def set_min_motor_pwm(self,min = 1200):
         #This sets the max PWM value in microseconds that will ever be output to the motors
         self.master.mav.param_set_send(
         self.master.target_system, self.master.target_component,
@@ -117,7 +126,7 @@ class Pixhawk:
         mavutil.mavlink.MAV_PARAM_TYPE_REAL32
      )
     
-    def Flight_Mode_Running_Now(self):
+    def flight_mode_running_now(self):
         # Wait for a heartbeat message from the Pixhawk
         heartbeats = self.master.recv_match(type='HEARTBEAT', blocking=True)
         # Retrieve the flight mode from the heartbeat message
@@ -126,23 +135,26 @@ class Pixhawk:
         print("Flight mode:", mode)
         time.sleep(0.01)
         
-    def ControlPixhawk(self, message ):
-        self.set_direction_channel_pwm(int(message[0:4]), int(message[4:8]), int(message[8:12]), int(message[12:16]))
-        self.set_gribber_light_pwm(message[16:20])
+    def control_pixhawk(self, message):
 
-        if int(message[20]) == 1:
-            self.Set_MAX_MOTOR_PWM(1750)
-            self.Set_MIN_MOTOR_PWM(1250)
-        else:
-            self.Set_MAX_MOTOR_PWM(1800)
-            self.Set_MIN_MOTOR_PWM(1200)
+        message = Message(message)
+
+        self.set_direction_channel_pwm(message.get_value("throttle"), message.get_value("yaw"), message.get_value("forward"), message.get_value("lateral"))
+        self.set_gripper_light_pwm(message.get_value("gripper_1"), message.get_value("gripper_2"), message.get_value("light"), message.get_value("rotating_gripper"))
+
+        # if int(message[20]) == 1:
+        #     self.Set_MAX_MOTOR_PWM(1750)
+        #     self.Set_MIN_MOTOR_PWM(1250)
+        # else:
+        #     self.Set_MAX_MOTOR_PWM(1800)
+        #     self.Set_MIN_MOTOR_PWM(1200)
         
-        if int(message[21]) == 1:
+        if message.get_value("armed"):
             self.arm()
-        elif int(message[21]) == 0:
+        else:
             self.disarm()
         
-        self.Set_Flight_Mode(message[22])
+        self.set_flight_mode(message.get_value("flight_mode"))
 
 
 

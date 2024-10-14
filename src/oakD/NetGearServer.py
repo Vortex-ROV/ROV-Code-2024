@@ -15,26 +15,23 @@ class NetgearServer(NetGear):
         # define various tweak flags
         options = {
             "jpeg_compression": True,
-            "jpeg_compression_quality": 50,
+            "jpeg_compression_quality": 90,
             "jpeg_compression_fastdct": True,
             "jpeg_compression_fastupsample": True,
-            # "compression_format": ".png",  # Using PNG format for compression
-            # "compression_param": 3,        # Compression level (0 to 9)
-            # "max_retries":sys.maxsize
+            "max_retries":sys.maxsize,
+            # "bidirectional_mode": True  # Enable two-way communication
         }
+        # options = {
+        #     "bidirectional_mode":True,
+        #     "compression_format": ".png",  # Using PNG format for compression
+        #     "compression_param": 3,        # Compression level (0 to 9)
+        # }
         # Define Netgear Server with default parameters
-        # self.server = NetGear(
-        #     address=ADDRESS,
-        #     port=PORT,
-        #     protocol="tcp",
-        #     pattern=1,
-        #     logging=True,
-        #     **options
-        # )
-        super().__init__(address=ADDRESS,
+        self.server = NetGear(
+            address=ADDRESS,
             port=PORT,
             protocol="tcp",
             pattern=1,
-            logging=True,
-
-            **options)
+            logging=False,
+            **options
+        )

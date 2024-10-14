@@ -1,13 +1,11 @@
-import cv2
 import depthai as dai
-import numpy as np
-from NetGearServer import NetgearServer
-from OakPipeline import OakPipeline
+from .NetGearServer import NetgearServer
+from .OakPipeline import OakPipeline
 import threading
-import time
+import cv2
 class oakServer():
     
-    def __init__(self, fps=40):
+    def __init__(self, fps=60):
         self.pipeline = OakPipeline(FPS=fps).get_pipeline()  # Set up the Oak-D pipeline
         self.device = None
         self.video_queue = None
@@ -30,7 +28,6 @@ class oakServer():
             video_in = self.video_queue.get()
             frame = video_in.getCvFrame()
             # frame = np.ones((1080,1920,3),dtype=np.uint8) * 255
-            # print(frame.shape)
             # Store the latest frame with thread safety
             with self.frame_lock:
                 self.latest_frame = frame
@@ -46,39 +43,30 @@ class oakServer():
         #     self.device.close()
         self.server.close()
 
-    def main():
+    def main(self):
         # Initialize and start the Netgear stream
-        netgear_stream = oakServer(fps=40)
+        
+        netgear_stream = oakServer(fps=30)
         netgear_stream.start()
 
-        start_time_OakServerStream = time.time()
-        netgear_stream.start()
-        end_time_OakServerStream = time.time()
-        print("Oak Server Stream time = ",end_time_OakServerStream-start_time_OakServerStream)
         try:
             while True:
                 # Get the latest frame captured by the thread
-                start_time_getf = time.time()
                 frame = netgear_stream.get_latest_frame()
-                end_time_getf = time.time()
-                print("get frame time = ",end_time_getf-start_time_getf)
                 if frame is not None:
                     # Send the latest frame through the server
-                    start_time_sendf = time.time()
-                    netgear_stream.server.send(frame)
-                    end_time_sendf = time.time()
-                    print("send frame time = ",end_time_sendf-start_time_sendf)
                     # netgear_stream.server.send(frame)
+                    netgear_stream.server.server.send(frame)
 
-                
                 # Optionally, you can add a small delay or check for exit conditions
                 # time.sleep(0.01)
-        except KeyboardInterrupt:
+        except :
             print("Exiting...")
             netgear_stream.stop()
+            cv2.destroyAllWindows()
 
+
+    
 if __name__ == "__main__":
-    tt = time.time()
-    camera = oakServer()
-    oakServer.main()
-    print("El-Lol = ",time.time()-tt)
+    camera = oakServer(fps=30)
+    camera.main()

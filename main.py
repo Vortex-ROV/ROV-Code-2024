@@ -1,3 +1,4 @@
+from src.server_socket.message import Message
 import time
 import threading
 from src.server_socket import ServerSocket
@@ -13,22 +14,25 @@ while True:
         pix = Pixhawk()
         print("done")
         break
-    except:
+    except Exception as e:
+        print(e)
         print("No pixhawk connected")
 
 Heeartbeat_thread = threading.Thread(target=pix.heartbeat)
-oak_thread = threading.Thread(target=oak.Main())
+oak_thread = threading.Thread(target=oak.main)
 Heeartbeat_thread.start()
 oak_thread.start()
 
+msg_len = len(Message().bytes())
+
 while True:
-   
-    ControlMessage = Sobek.receive(24)
+    
+    msg = Sobek.receive(msg_len)
 
-    Sobek.send(pix.get_sensor().encode())
+    # Sobek.send(pix.get_sensor().encode())
 
-    if ControlMessage is not None:
-        pix.ControlPixhawk(ControlMessage)
-        print(ControlMessage)
+    if msg is not None:
+        pix.control_pixhawk(msg)
+        print(msg)
 
     time.sleep(0.01)

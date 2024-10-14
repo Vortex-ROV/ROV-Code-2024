@@ -16,7 +16,7 @@ class ServerSocket:
 
     def receive(self, buffer_size: int):
         try:
-            received = self.__client_socket.recv(buffer_size).decode()
+            received = self.__client_socket.recv(buffer_size)
             if received is not None and len(received) != 0:
                 return received
             raise socket.error
@@ -37,6 +37,10 @@ class ServerSocket:
             self.accept()
         except AttributeError as e:
             pass
+
+    def __del__(self):
+        self.__welcoming_socket.close()
+        self.__client_socket.close()
     # def closedSocket(self): #try it 29/4/2024 if not working remove it / to handle if socket disconnected stop rov until its connected again 
     #     return self.closed
 
