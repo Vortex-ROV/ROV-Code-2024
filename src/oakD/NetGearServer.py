@@ -15,7 +15,7 @@ class NetgearServer(NetGear):
         # define various tweak flags
         options = {
             "jpeg_compression": True,
-            "jpeg_compression_quality": 90,
+            "jpeg_compression_quality": 70,
             "jpeg_compression_fastdct": True,
             "jpeg_compression_fastupsample": True,
             "max_retries":sys.maxsize,

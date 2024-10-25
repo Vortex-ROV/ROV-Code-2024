@@ -1,6 +1,6 @@
 import depthai as dai
-from .NetGearServer import NetgearServer
-from .OakPipeline import OakPipeline
+from NetGearServer import NetgearServer
+from OakPipeline import OakPipeline
 import threading
 import cv2
 class oakServer():
