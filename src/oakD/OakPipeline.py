@@ -25,6 +25,7 @@ class OakPipeline:
         # create oak-d pipeline
         self.pipeline = dai.Pipeline()
         self.camRgb = self.pipeline.create(dai.node.ColorCamera)
+        self.camRgb.initialControl.setManualFocus(100)
         self.xoutRgb = self.pipeline.create(dai.node.XLinkOut)
 
         
