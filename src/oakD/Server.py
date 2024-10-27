@@ -42,11 +42,7 @@ class oakServer():
     def get_latest_frame(self):
         # Return the latest frame in a thread-safe way
         with self.frame_lock:
-            # Process the frame for ArUco markers
-            if self.latest_frame is not None:
-                processed_frame = self.aruco_detector.detect_aruco_markers(self.latest_frame.copy())
-                return processed_frame
-            return None
+            return self.latest_frame
 
     def stop(self):
         self.running = False
