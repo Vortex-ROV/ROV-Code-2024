@@ -1,7 +1,7 @@
 import depthai as dai
-from NetGearServer import NetgearServer
-from OakPipeline import OakPipeline
-from ArucoMarker import ArucoDetector
+from .NetGearServer import NetgearServer
+from .OakPipeline import OakPipeline
+# from ArucoMarker import ArucoDetector
 import threading
 import cv2
 class oakServer():
@@ -16,7 +16,7 @@ class oakServer():
         self.frame_lock = threading.Lock()
 
         # Initialize ArucoDetector
-        self.aruco_detector = ArucoDetector()
+        # self.aruco_detector = ArucoDetector()
 
     def start(self):
         # Start the Oak-D device and stream
@@ -37,7 +37,7 @@ class oakServer():
                 self.latest_frame = frame
 
             # Pass the frame to the ArucoDetector for processing
-            self.aruco_detector.update_frame(frame)
+            # self.aruco_detector.update_frame(frame)
 
     def get_latest_frame(self):
         # Return the latest frame in a thread-safe way
