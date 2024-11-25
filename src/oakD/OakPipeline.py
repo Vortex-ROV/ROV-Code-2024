@@ -26,7 +26,7 @@ class OakPipeline:
         self.pipeline = dai.Pipeline()
 
         # This might improve reducing the latency on some systems
-        pipeline.setXLinkChunkSize(0)
+        # self.pipeline.setXLinkChunkSize(0)
         
         self.camRgb = self.pipeline.create(dai.node.ColorCamera)
         # self.camRgb.initialControl.setManualFocus(120)
