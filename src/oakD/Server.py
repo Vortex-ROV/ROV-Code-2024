@@ -1,7 +1,6 @@
 import depthai as dai
 from NetGearServer import NetgearServer
 from OakPipeline import OakPipeline
-# from ArucoMarker import ArucoDetector
 import threading
 import cv2
 import numpy as np
@@ -12,18 +11,25 @@ class oakServer():
         self.pipeline = OakPipeline(FPS=fps).get_pipeline()  # Set up the Oak-D pipeline
         self.device = None
         self.video_queue = None
+        self.depth_queue = None
+        self.disparity_queue = None
+        self.right_queue = None
+        self.toggle_queue = None
         self.server = NetgearServer()
         self.running = False
         self.latest_frame = None  # Shared resource for the latest frame
         self.frame_lock = threading.Lock()
+        self.toggle_state = False
 
-        # Initialize ArucoDetector
-        # self.aruco_detector = ArucoDetector()
 
     def start(self):
         # Start the Oak-D device and stream
         self.device = dai.Device(self.pipeline)
         self.video_queue = self.device.getOutputQueue(name="video", maxSize=4, blocking=False)
+        self.depth_queue = self.device.getOutputQueue(name="depth", maxSize=4, blocking=False)
+        self.disparity_queue = self.device.getOutputQueue(name="disparity", maxSize=4, blocking=False)
+        self.right_queue = self.device.getOutputQueue(name="right", maxSize=4, blocking=False)
+        self.toggle_queue = self.device.getInputQueue(name="toggle")
         self.running = True
 
         # Start thread for capturing frames from Oak-D
@@ -31,13 +37,21 @@ class oakServer():
     
     def _capture_frames(self):
         while self.running:
-            video_in = self.video_queue.get()
-            frame = video_in.getCvFrame()
-
-            # # Latency in miliseconds 
-            # latencyMs = (dai.Clock.now() - frame.getTimestamp()).total_seconds() * 1000
-            # diffs = np.append(diffs, latencyMs)
-            # print('Latency: {:.2f} ms, Average latency: {:.2f} ms, Std: {:.2f}'.format(latencyMs, np.average(diffs), np.std(diffs)))
+            if self.toggle_state:
+                if self.depth_queue.has() and self.disparity_queue.has() and self.right_queue.has():
+                    disparity_frame = self.disparity_queue.get().getFrame()
+                    disparity_frame = (disparity_frame*(255/OakPipeline().get_stereo().getMaxDisparity())).astype(np.uint8)
+                    disparity_frame = cv2.applyColorMap(disparity_frame, cv2.COLORMAP_JET)
+                    right_frame = self.right_queue.get().getCvFrame()
+                    overlay_frame = cv2.addWeighted(right_frame, 0.5, disparity_frame, 0.5, 0)
+                    with self.frame_lock:
+                        self.latest_frame = overlay_frame
+            else:
+                if self.video_queue.has():
+                    video_in = self.video_queue.get()
+                    frame = video_in.getCvFrame()
+                    with self.frame_lock:
+                        self.latest_frame = frame
 
             # frame = np.ones((1080,1920,3),dtype=np.uint8) * 255
             # Store the latest frame with thread safety
@@ -60,7 +74,7 @@ class oakServer():
 
     def main(self):
         # Initialize and start the Netgear stream
-        
+        self.running = Fal
         netgear_stream = oakServer(fps=30)
         netgear_stream.start()
 
