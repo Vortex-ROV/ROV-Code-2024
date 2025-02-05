@@ -14,12 +14,13 @@ class NetgearServer(NetGear):
     def __init__(self, ADDRESS="192.168.33.100", PORT="5454") -> None:
         # define various tweak flags
         options = {
+            "receive_mode": True,
             "jpeg_compression": True,
             "jpeg_compression_quality": 80,
             "jpeg_compression_fastdct": True,
             "jpeg_compression_fastupsample": True,
             "max_retries":sys.maxsize,
-            # "bidirectional_mode": True  # Enable two-way communication
+            "bidirectional_mode": True  # Enable two-way communication
         }
         # options = {
         #     "bidirectional_mode":True,
@@ -35,3 +36,21 @@ class NetgearServer(NetGear):
             logging=False,
             **options
         )
+    def Receive(self):
+        """
+        Receive a frame from the client
+        """
+        data = self.server.recv()
+        return data
+
+    def Send(self, frame):
+        """
+        Send a frame to the client
+        """
+        self.server.send(frame)
+
+    def Close(self):
+        """
+        Close the connection
+        """
+        self.server.close()

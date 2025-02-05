@@ -26,7 +26,7 @@ class OakPipeline:
         self.pipeline = dai.Pipeline()
 
         # This might improve reducing the latency on some systems
-        # self.pipeline.setXLinkChunkSize(0)
+        self.pipeline.setXLinkChunkSize(0)
         
         self.camRgb = self.pipeline.create(dai.node.ColorCamera)
         # self.camRgb.initialControl.setManualFocus(120)
@@ -67,9 +67,9 @@ class OakPipeline:
         self.camRgb.video.link(self.xoutRgb.input)
 
         # Set up mono cameras
-        self.monoLeft.setResolution(dai.MonoCameraProperties.SensorResolution.THE_720_P)
+        self.monoLeft.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
         self.monoLeft.setBoardSocket(dai.CameraBoardSocket.LEFT)
-        self.monoRight.setResolution(dai.MonoCameraProperties.SensorResolution.THE_720_P)
+        self.monoRight.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
         self.monoRight.setBoardSocket(dai.CameraBoardSocket.RIGHT)
 
     def configure_stereo_depth(self):
@@ -102,7 +102,7 @@ class OakPipeline:
     def create_toggle_script(self):
         script = self.pipeline.create(dai.node.Script)
         script.setScript("""
-            toggle = False
+            toggle = True
             while True:
                 msg = node.io['toggle'].tryGet()
                 if msg:
@@ -117,11 +117,11 @@ class OakPipeline:
                     if disparity: node.io['disparity_out'].send(disparity)
                     if right: node.io['right_out'].send(right)
                 else:
-                    rgb = node.io['rgb'].tryGet()
+                    rgb = node.io['video'].tryGet()
                     if rgb: node.io['rgb_out'].send(rgb)
         """)
 
-        self.camRgb.video.link(script.inputs['rgb'])
+        self.camRgb.video.link(script.inputs['video'])
         self.stereo.depth.link(script.inputs['depth'])
         self.stereo.disparity.link(script.inputs['disparity'])
         self.monoRight.out.link(script.inputs['right'])

@@ -19,7 +19,7 @@ class oakServer():
         self.running = False
         self.latest_frame = None  # Shared resource for the latest frame
         self.frame_lock = threading.Lock()
-        self.toggle_state = False
+        self.toggle_state = True  # True for depth, False for RGB
 
 
     def start(self):
@@ -39,13 +39,28 @@ class oakServer():
         while self.running:
             if self.toggle_state:
                 if self.depth_queue.has() and self.disparity_queue.has() and self.right_queue.has():
+                    
                     disparity_frame = self.disparity_queue.get().getFrame()
                     disparity_frame = (disparity_frame*(255/OakPipeline().get_stereo().getMaxDisparity())).astype(np.uint8)
                     disparity_frame = cv2.applyColorMap(disparity_frame, cv2.COLORMAP_JET)
+
                     right_frame = self.right_queue.get().getCvFrame()
-                    overlay_frame = cv2.addWeighted(right_frame, 0.5, disparity_frame, 0.5, 0)
+                    right_frame = cv2.cvtColor(right_frame, cv2.COLOR_GRAY2BGR)
+
+                    depth_frame = self.depth_queue.get().getFrame()
+                    depth_frame = cv2.normalize(depth_frame, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+                    depth_frame = np.expand_dims(depth_frame, axis=2)
+                    depth_frame = cv2.cvtColor(depth_frame, cv2.COLOR_GRAY2BGR)
+
+                    stacked_frame = np.hstack((right_frame, disparity_frame, depth_frame))
+
+                    # overlay_frame = cv2.addWeighted(right_frame, 0.5, disparity_frame, 0.5, 0)
+                    
                     with self.frame_lock:
-                        self.latest_frame = overlay_frame
+                        self.latest_frame = stacked_frame
+
+                # else:
+                #     print("No frames available")
             else:
                 if self.video_queue.has():
                     video_in = self.video_queue.get()
@@ -55,8 +70,6 @@ class oakServer():
 
             # frame = np.ones((1080,1920,3),dtype=np.uint8) * 255
             # Store the latest frame with thread safety
-            with self.frame_lock:
-                self.latest_frame = frame
 
             # Pass the frame to the ArucoDetector for processing
             # self.aruco_detector.update_frame(frame)
@@ -74,7 +87,6 @@ class oakServer():
 
     def main(self):
         # Initialize and start the Netgear stream
-        self.running = Fal
         netgear_stream = oakServer(fps=30)
         netgear_stream.start()
 
@@ -82,6 +94,16 @@ class oakServer():
             while True:
                 # Get the latest frame captured by the thread
                 frame = netgear_stream.get_latest_frame()
+
+
+                # **Receive messages from the client**
+                message = netgear_stream.server.Receive()
+                
+                if message is not None and isinstance(message, str) and message == "toggle":
+                    self.toggle_state = not self.toggle_state  # Toggle the state
+                    print(f"Toggled! Current state: {'Depth' if self.toggle_state else 'RGB'}")
+
+
                 if frame is not None:
                     # Send the latest frame through the server
                     # netgear_stream.server.send(frame)
